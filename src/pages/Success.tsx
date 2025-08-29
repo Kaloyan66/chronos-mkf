@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import supabase from '../lib/supabase';
 
@@ -8,20 +8,22 @@ export default function Success() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const sessionId = searchParams.get('session_id');
-    if (!sessionId) {
+    const param =
+      searchParams.get('session_id') || searchParams.get('sessionId'); // приемаме и двете форми
+    if (!param) {
       setError('Invalid session');
       setIsVerifying(false);
       return;
     }
+    const sessionId = String(param);
 
-    const successStatuses = new Set(['paid', 'completed', 'succeeded']); // <- приемаме и трите
+    const successStatuses = new Set(['paid', 'completed', 'succeeded']);
     const POLL_MS = 2000;      // 2 сек.
     const MAX_WAIT_MS = 60000; // 60 сек.
     let waited = 0;
     let cancelled = false;
 
-    const checkOnce = async () => {
+    const checkOnce = async (): Promise<string | null> => {
       const { data: payment, error: dbError } = await supabase
         .from('payments')
         .select('payment_status')
@@ -31,8 +33,7 @@ export default function Success() {
       if (dbError || !payment) {
         throw new Error('Payment verification failed');
       }
-
-      return payment.payment_status as string | null;
+      return (payment.payment_status as string) ?? null;
     };
 
     const poll = async () => {
@@ -45,22 +46,26 @@ export default function Success() {
         }
 
         if (waited >= MAX_WAIT_MS) {
-          // още се обработва — покажи информативно съобщение, не грешка
-          setError('Payment is still processing. You will receive an email once it’s confirmed.');
+          setError(
+            "Payment is still processing. You'll receive an email once it’s confirmed."
+          );
           setIsVerifying(false);
           return;
         }
 
         waited += POLL_MS;
         if (!cancelled) setTimeout(poll, POLL_MS);
-      } catch (err: any) {
-        setError(err.message || 'Payment verification failed');
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : 'Payment verification failed';
+        setError(msg);
         setIsVerifying(false);
       }
     };
 
     poll();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [searchParams]);
 
   if (isVerifying) {
@@ -77,9 +82,7 @@ export default function Success() {
     return (
       <div className="min-h-screen bg-gray-900 flex items-center justify-center px-4">
         <div className="max-w-md w-full bg-gray-800 p-8 rounded-xl shadow-lg text-center">
-          <h2 className="text-2xl font-bold text-white mb-4">
-            Payment Error
-          </h2>
+          <h2 className="text-2xl font-bold text-white mb-4">Payment Error</h2>
           <p className="text-red-400 mb-8">{error}</p>
           <Link
             to="/"
@@ -97,16 +100,13 @@ export default function Success() {
       <div className="max-w-md w-full bg-gray-800 p-8 rounded-xl shadow-lg text-center">
         <div className="mb-8">
           <div className="mx-auto w-16 h-16 bg-green-500 rounded-full flex items-center justify-center">
-            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           </div>
         </div>
-        
-        <h2 className="text-2xl font-bold text-white mb-4">
-          Благодарим за поръчката!
-        </h2>
-        
+
+        <h2 className="text-2xl font-bold text-white mb-4">Благодарим за поръчката!</h2>
         <p className="text-gray-300 mb-8">
           Вашата поръчка е успешно обработена. Скоро ще получите имейл с повече информация.
         </p>
