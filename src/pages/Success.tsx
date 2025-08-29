@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
+import supabase from '../lib/supabase';
 
 export default function Success() {
   const [searchParams] = useSearchParams();
@@ -15,30 +15,52 @@ export default function Success() {
       return;
     }
 
-    const checkPaymentStatus = async () => {
+    const successStatuses = new Set(['paid', 'completed', 'succeeded']); // <- приемаме и трите
+    const POLL_MS = 2000;      // 2 сек.
+    const MAX_WAIT_MS = 60000; // 60 сек.
+    let waited = 0;
+    let cancelled = false;
+
+    const checkOnce = async () => {
+      const { data: payment, error: dbError } = await supabase
+        .from('payments')
+        .select('payment_status')
+        .eq('stripe_session_id', sessionId)
+        .single();
+
+      if (dbError || !payment) {
+        throw new Error('Payment verification failed');
+      }
+
+      return payment.payment_status as string | null;
+    };
+
+    const poll = async () => {
       try {
-        const { data: payment, error: dbError } = await supabase
-          .from('payments')
-          .select('payment_status')
-          .eq('stripe_session_id', sessionId)
-          .single();
+        const status = await checkOnce();
 
-        if (dbError || !payment) {
-          throw new Error('Payment verification failed');
+        if (status && successStatuses.has(status)) {
+          setIsVerifying(false);
+          return;
         }
 
-        if (payment.payment_status !== 'completed') {
-          throw new Error('Payment not completed');
+        if (waited >= MAX_WAIT_MS) {
+          // още се обработва — покажи информативно съобщение, не грешка
+          setError('Payment is still processing. You will receive an email once it’s confirmed.');
+          setIsVerifying(false);
+          return;
         }
 
-        setIsVerifying(false);
-      } catch (err) {
-        setError(err.message);
+        waited += POLL_MS;
+        if (!cancelled) setTimeout(poll, POLL_MS);
+      } catch (err: any) {
+        setError(err.message || 'Payment verification failed');
         setIsVerifying(false);
       }
     };
 
-    checkPaymentStatus();
+    poll();
+    return () => { cancelled = true; };
   }, [searchParams]);
 
   if (isVerifying) {
