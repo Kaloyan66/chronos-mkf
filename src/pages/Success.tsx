@@ -17,7 +17,6 @@ export default function Success() {
     }
     const sessionId = String(param);
 
-    const successStatuses = new Set(['paid', 'completed', 'succeeded']);
     const POLL_MS = 2000;      // 2 сек.
     const MAX_WAIT_MS = 60000; // 60 сек.
     let waited = 0;
@@ -40,11 +39,13 @@ export default function Success() {
       try {
         const status = await checkOnce();
 
-        if (status && successStatuses.has(status)) {
+        // УСПЕХ: приемаме само 'paid'
+        if (status === 'paid') {
           setIsVerifying(false);
           return;
         }
 
+        // Ако уебхукът още не е дошъл (pending/NULL) — изчакваме
         if (waited >= MAX_WAIT_MS) {
           setError(
             "Payment is still processing. You'll receive an email once it’s confirmed."
