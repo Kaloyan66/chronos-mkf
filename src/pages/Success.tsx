@@ -96,29 +96,44 @@ export default function Success() {
     );
   }
 
-  return (
+    return (
     <div className="min-h-screen bg-gray-900 flex items-center justify-center px-4">
       <div className="max-w-md w-full bg-gray-800 p-8 rounded-xl shadow-lg text-center">
         <div className="mb-8">
           <div className="mx-auto w-16 h-16 bg-green-500 rounded-full flex items-center justify-center">
-            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <svg
+              className="w-8 h-8 text-white"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           </div>
         </div>
 
-        <h2 className="text-2xl font-bold text-white mb-4">Благодарим за поръчката!</h2>
+        {/* Main Message */}
+        <h1 className="text-2xl font-bold text-white mb-4">Your order was successful!</h1>
         <p className="text-gray-300 mb-8">
-          Вашата поръчка е успешно обработена. Скоро ще получите имейл с повече информация.
+          You’ll receive the e-book by email within 10 minutes.
         </p>
 
+        {/* Additional Info */}
+        <p className="text-gray-400 mb-2">
+          Please check your inbox (including the spam folder).
+        </p>
+        <p className="text-gray-400 mb-8">
+          If you have any questions, feel free to contact us.
+        </p>
+
+        {/* Back to Home Button */}
         <Link
           to="/"
           className="inline-block bg-[#FFD700] hover:bg-[#E5C100] text-gray-900 font-bold py-3 px-6 rounded-lg transition-colors duration-200"
         >
-          Обратно към началната страница
+          Back to homepage
         </Link>
       </div>
     </div>
   );
-}
