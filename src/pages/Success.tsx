@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import supabase from '../lib/supabase';
+import { supabase } from '../lib/supabase';
 
 export default function Success() {
   const [searchParams] = useSearchParams();
