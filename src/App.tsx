@@ -295,7 +295,7 @@ function App() {
                   ) : (
                     <span>
                       Buy now –{' '}
-                      <span className="line-through opacity-75">25$</span> 10$
+                      <span className="line-through opacity-75">15$</span> 7$
                     </span>
                   )}
                 </button>   
