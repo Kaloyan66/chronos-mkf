@@ -3,6 +3,7 @@ import { useEffect, useRef } from 'react';
 import { createCheckoutSession } from './lib/stripe';
 import { products } from './stripe-config';
 import cover from '/assets/image.png';
+const MAINTENANCE_MODE = true;
 
 function App() {
   const [formData, setFormData] = useState({
