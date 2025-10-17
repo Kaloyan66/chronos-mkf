@@ -78,35 +78,11 @@ function App() {
       setIsLoading(false);
     }
   };
-  // --- maintenance mode check: paste this AFTER handleSubmit and BEFORE the existing `return ( <>` ---
+    // --- maintenance mode check: minimal version ---
   if (MAINTENANCE_MODE) {
     return (
-      <div className="min-h-screen bg-[#0B1120] flex items-center justify-center px-4">
-        <div className="max-w-md w-full bg-gray-800 p-8 rounded-xl shadow-lg text-center">
-          <div className="mb-6">
-            <div className="mx-auto w-16 h-16 bg-green-500 rounded-full flex items-center justify-center">
-              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3" />
-              </svg>
-            </div>
-          </div>
-
-          <h1 className="text-2xl font-bold text-white mb-4">Site Under Maintenance</h1>
-
-          <p className="text-gray-300 mb-4">
-            We’re performing a quick update. The store and payment system will be back shortly.
-          </p>
-
-          <p className="text-gray-400 mb-6">If urgent, contact: <strong className="text-white">support@yourdomain.com</strong></p>
-
-          <a
-            href="/"
-            className="inline-block bg-[#FFD700] hover:bg-[#E5C100] text-gray-900 font-bold py-3 px-6 rounded-lg transition-colors duration-200"
-            onClick={(e) => { e.preventDefault(); /* optional: keep user on this page */ }}
-          >
-            Back to homepage
-          </a>
-        </div>
+      <div className="min-h-screen bg-[#0B1120] flex items-center justify-center">
+        <h1 className="text-3xl font-bold text-white">Site Under Maintenance</h1>
       </div>
     );
   }
