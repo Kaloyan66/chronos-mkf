@@ -3,7 +3,6 @@ import { useEffect, useRef } from 'react';
 import { createCheckoutSession } from './lib/stripe';
 import { products } from './stripe-config';
 import cover from '/assets/image.png';
-const MAINTENANCE_MODE = true;
 
 function App() {
   const [formData, setFormData] = useState({
@@ -78,15 +77,6 @@ function App() {
       setIsLoading(false);
     }
   };
-    // --- maintenance mode check: minimal version ---
-  if (MAINTENANCE_MODE) {
-    return (
-      <div className="min-h-screen bg-[#0B1120] flex items-center justify-center">
-        <h1 className="text-3xl font-bold text-white">Site Under Maintenance</h1>
-      </div>
-    );
-  }
-  // --- end maintenance check ---
 
   return (
       <>
